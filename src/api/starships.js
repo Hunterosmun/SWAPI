@@ -10,5 +10,20 @@ export default async function main () {
     ships = ships.concat(data.results)
   } while (data.next)
 
+  // next I need to put in every pilot & film
+  // I think I'll try to cache it as I go
+  ships.map(ship => {
+    ship.pilots = getPilots(ship)
+  })
+  console.log(ships)
+
   return ships
+}
+
+const getPilots = ship => {
+  if (ship.pilots.length < 1) return ship
+  const fetchedPilots = ship.pilots.map(
+    async pilot => await axios.get(pilot).then(a => a.data)
+  )
+  return Promise.all(fetchedPilots)
 }

@@ -19,7 +19,18 @@ export default function ShipBox ({ ship }) {
               key === 'url'
             )
               return <></>
-
+            if (key === 'pilots') {
+              return ship[key].length > 0 ? (
+                <div>
+                  {_.startCase(key)}:{' '}
+                  {ship[key].map(indiv => (
+                    <div>{_.toUpper(indiv)}</div>
+                  ))}
+                </div>
+              ) : (
+                <></>
+              )
+            }
             return (
               <div>
                 {_.startCase(key)}: {ship[key]}
