@@ -23,9 +23,11 @@ export default function ShipBox ({ ship }) {
               return ship[key].length > 0 ? (
                 <div>
                   {_.startCase(key)}:{' '}
-                  {ship[key].map(indiv => (
-                    <div>{_.toUpper(indiv)}</div>
-                  ))}
+                  <ul>
+                    {ship[key].map(indiv => (
+                      <li>{indiv.name}</li>
+                    ))}
+                  </ul>
                 </div>
               ) : (
                 <></>
@@ -49,4 +51,8 @@ const ShipStyle = styled.div`
   box-sizing: border-box;
   margin: 8px auto;
   max-width: 700px;
+
+  & ul {
+    margin: 0;
+  }
 `

@@ -12,18 +12,19 @@ export default async function main () {
 
   // next I need to put in every pilot & film
   // I think I'll try to cache it as I go
-  ships.map(ship => {
-    ship.pilots = getPilots(ship)
-  })
+  for (let i = 0; i < ships.length; ++i) {
+    ships[i].pilots = await getPilots(ships[i].pilots)
+  }
   console.log(ships)
 
   return ships
 }
 
-const getPilots = ship => {
-  if (ship.pilots.length < 1) return ship
-  const fetchedPilots = ship.pilots.map(
-    async pilot => await axios.get(pilot).then(a => a.data)
-  )
-  return Promise.all(fetchedPilots)
+const getPilots = async pilots => {
+  if (pilots.length < 1) return pilots
+  const fetchedPilots = []
+  for (let i = 0; i < pilots.length; ++i) {
+    fetchedPilots.push(await axios.get(pilots[i]).then(a => a.data))
+  }
+  return fetchedPilots
 }
