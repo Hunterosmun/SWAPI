@@ -1,14 +1,33 @@
 import React from 'react'
 import styled from 'styled-components'
+import _ from 'lodash'
 
 export default function ShipBox ({ ship }) {
   const [active, setActive] = React.useState(false)
 
   return (
     <ShipStyle>
-      <div>name: {ship.name}</div>
+      {!active && <div>Name: {ship.name}</div>}
       <button onClick={() => setActive(!active)}>Details</button>
-      {active && <div>{JSON.stringify(ship, null, 2)}</div>}
+      {active && (
+        <>
+          {Object.keys(ship).map(key => {
+            if (
+              key === 'films' ||
+              key === 'created' ||
+              key === 'edited' ||
+              key === 'url'
+            )
+              return <></>
+
+            return (
+              <div>
+                {_.startCase(key)}: {ship[key]}
+              </div>
+            )
+          })}
+        </>
+      )}
     </ShipStyle>
   )
 }

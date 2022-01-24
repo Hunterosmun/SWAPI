@@ -13,7 +13,7 @@ import ShipBox from './modules/shipview'
 // 6 See info on pilots attached to individual starships
 
 function App () {
-  const [starships, setStarships] = React.useState('')
+  const [starships, setStarships] = React.useState([])
   React.useEffect(() => {
     fetchStarships().then(e => setStarships(e))
   }, [])
