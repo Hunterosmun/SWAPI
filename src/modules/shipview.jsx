@@ -12,20 +12,15 @@ export default function ShipBox ({ ship }) {
       {active && (
         <>
           {Object.keys(ship).map(key => {
-            if (
-              key === 'films' ||
-              key === 'created' ||
-              key === 'edited' ||
-              key === 'url'
-            )
+            if (key === 'created' || key === 'edited' || key === 'url')
               return <></>
-            if (key === 'pilots') {
+            if (key === 'pilots' || key === 'films') {
               return ship[key].length > 0 ? (
                 <div>
-                  {_.startCase(key)}:{' '}
+                  {_.startCase(key)}:
                   <ul>
                     {ship[key].map(indiv => (
-                      <li>{indiv.name}</li>
+                      <li>{indiv.name || indiv.title}</li>
                     ))}
                   </ul>
                 </div>

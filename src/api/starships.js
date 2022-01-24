@@ -1,5 +1,7 @@
 const axios = require('axios')
 
+const memo = {}
+
 export default async function main () {
   let data = await axios
     .get('https://swapi.dev/api/starships')
@@ -13,18 +15,23 @@ export default async function main () {
   // next I need to put in every pilot & film
   // I think I'll try to cache it as I go
   for (let i = 0; i < ships.length; ++i) {
-    ships[i].pilots = await getPilots(ships[i].pilots)
+    ships[i].pilots = await getPart(ships[i].pilots)
+    ships[i].films = await getPart(ships[i].films)
   }
   console.log(ships)
+  console.log(memo)
 
   return ships
 }
 
-const getPilots = async pilots => {
-  if (pilots.length < 1) return pilots
-  const fetchedPilots = []
-  for (let i = 0; i < pilots.length; ++i) {
-    fetchedPilots.push(await axios.get(pilots[i]).then(a => a.data))
+const getPart = async arr => {
+  if (arr.length < 1) return arr
+  const fetchedParts = []
+  for (let i = 0; i < arr.length; ++i) {
+    if (!(arr[i] in memo)) {
+      memo[arr[i]] = await axios.get(arr[i]).then(a => a.data)
+    }
+    fetchedParts.push(memo[arr[i]])
   }
-  return fetchedPilots
+  return fetchedParts
 }
