@@ -1,6 +1,13 @@
 const axios = require('axios')
 
 const memo = {}
+// Things I need to get an cache:
+// 1: starships
+// 2: pilots
+//   2.1: planets (homeworlds)
+//   2.2: species
+//   2.3: vehicles
+// 3: films
 
 export default async function main () {
   let data = await axios
@@ -12,8 +19,6 @@ export default async function main () {
     ships = ships.concat(data.results)
   } while (data.next)
 
-  // next I need to put in every pilot & film
-  // I think I'll try to cache it as I go
   for (let i = 0; i < ships.length; ++i) {
     ships[i].pilots = await getPart(ships[i].pilots)
     ships[i].films = await getPart(ships[i].films)
