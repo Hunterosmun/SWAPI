@@ -1,13 +1,6 @@
 const axios = require('axios')
 
 const memo = {}
-// Things I need to get an cache:
-// 1: starships
-// 2: pilots
-//   2.1: planets (homeworlds)
-//   2.2: species
-//   2.3: vehicles
-// 3: films
 
 export default async function main () {
   let data = await axios
@@ -30,7 +23,6 @@ export default async function main () {
 }
 
 const getPart = async arr => {
-  if (arr.length < 1) return arr
   const fetchedParts = []
   for (let i = 0; i < arr.length; ++i) {
     if (!(arr[i] in memo)) {

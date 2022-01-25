@@ -50,6 +50,18 @@ function PilotBox ({ pilot }) {
     <div>
       <button onClick={() => setActive(!active)}>Off</button>
       {Object.keys(pilot).map(cha => {
+        if (
+          cha === 'homeworld' ||
+          cha === 'films' ||
+          cha === 'species' ||
+          cha === 'vehicles' ||
+          cha === 'starships' ||
+          cha === 'created' ||
+          cha === 'created' ||
+          cha === 'edited' ||
+          cha === 'url'
+        )
+          return <></>
         return (
           <div>
             {_.startCase(cha)}: {pilot[cha]}
