@@ -18,6 +18,7 @@ import fetchStarships from './api/starships-only'
 
 function App () {
   const [search, setSearch] = React.useState('')
+  const [active, setActive] = React.useState(false)
   const [starships, setStarships] = React.useState([])
   let foundShips = _.filter(starships, ship => compare(search, ship.name))
 
@@ -28,12 +29,32 @@ function App () {
   return (
     <SearchWrapper>
       <h2>Star Wars Ship Search</h2>
-      <input
-        type='text'
-        placeholder='search'
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
+      <div className='options'>
+        <input
+          type='text'
+          placeholder='search'
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <button onClick={() => setActive(!active)}>Filters</button>
+        {active && (
+          <div className='filterBox'>
+            <button>Price Ascending</button>
+            <button>Price Descending</button>
+            <div>
+              Price Range:
+              <div>
+                max:
+                <input type='number' />
+              </div>{' '}
+              <div>
+                min:
+                <input type='number' />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <ShipSearch ships={foundShips} />
     </SearchWrapper>
   )
@@ -71,10 +92,37 @@ const SearchWrapper = styled.div`
     padding: 16px;
   }
 
-  & > input {
-    margin-bottom: 8px;
+  & > div > input {
+    margin: 0 0 8px 0;
     padding: 4px 8px;
     width: 300px;
+  }
+  & .options {
+    display: flex;
+    align-items: space-around;
+    justify-content: space-between;
+    position: relative;
+
+    & .filterBox {
+      border: 1px solid #bbb;
+      box-shadow: 4px 4px 4px #aaa;
+      position: absolute;
+      right: -130px;
+      max-width: 100px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px;
+
+      & input {
+        max-width: 90px;
+      }
+    }
+    & > button {
+      height: 27px;
+      margin-left: 24px;
+    }
   }
 `
 
