@@ -15,7 +15,7 @@ ReactDOM.render(
       <Routes>
         <Route path='/' element={<App />} />
         <Route path='ship' element={<SingleShip />}>
-          <Route path=':shipId' element={<SingleShip />} />
+          <Route path=':shipId/' element={<SingleShip />} />
         </Route>
         <Route path='full' element={<FullView />} />
         <Route path='*' element={<div>Nothin here :(</div>} />

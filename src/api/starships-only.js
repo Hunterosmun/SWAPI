@@ -10,7 +10,15 @@ export default async function main () {
     ships = ships.concat(data.results)
   } while (data.next)
 
-  console.log(ships)
+  ships = ships.map(ship => {
+    if (ship.cost_in_credits !== 'unknown') {
+      ship.cost_in_credits = +ship.cost_in_credits
+      return ship
+    } else {
+      ship.cost_in_credits = -1
+      return ship
+    }
+  })
 
   return ships
 }

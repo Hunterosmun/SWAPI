@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-export default async function main ({ url }) {
+export default async function main (url) {
   let ship = await axios.get(url).then(s => s.data)
 
   ship.pilots = await getPart(ship.pilots)

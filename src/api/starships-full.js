@@ -16,8 +16,6 @@ export default async function main () {
     ships[i].pilots = await getPart(ships[i].pilots)
     ships[i].films = await getPart(ships[i].films)
   }
-  console.log(ships)
-  console.log(memo)
 
   return ships
 }

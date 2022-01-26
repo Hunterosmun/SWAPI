@@ -1,18 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import _ from 'lodash'
-import { useParams } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 
 import fetchStarship from '../api/starship-single-detail'
 
 function SingleShip () {
   const [ship, setDetails] = React.useState({})
-  const { url } = useParams()
-  console.log('hello?!')
+  let location = useLocation()
+  let url = location.search.substring(1)
 
   React.useEffect(() => {
     fetchStarship(url).then(e => setDetails(e))
-  }, [])
+  }, [url])
 
   return <ShipBox ship={ship} />
 }
@@ -21,32 +21,36 @@ export default SingleShip
 
 function ShipBox ({ ship }) {
   return (
-    <BoxOne>
-      {Object.keys(ship).map(key => {
-        if (key === 'created' || key === 'edited' || key === 'url') return <></>
-        if (key === 'pilots' || key === 'films') {
-          return ship[key].length > 0 ? (
-            <div>
-              {_.startCase(key)}:
-              <ul>
-                {ship[key].map(indiv => (
-                  <li key={indiv}>
-                    {indiv.title || <PilotBox pilot={indiv} />}
-                  </li>
-                ))}
-              </ul>
+    <>
+      <BoxOne>
+        {Object.keys(ship).map(key => {
+          if (key === 'created' || key === 'edited' || key === 'url')
+            return <></>
+          if (key === 'pilots' || key === 'films') {
+            return ship[key].length > 0 ? (
+              <div key={key}>
+                {_.startCase(key)}:
+                <ul>
+                  {ship[key].map((indiv, i) => (
+                    <li key={i}>{indiv.title || <PilotBox pilot={indiv} />}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <></>
+            )
+          }
+          return (
+            <div key={ship[key]}>
+              {_.startCase(key)}: {ship[key]}
             </div>
-          ) : (
-            <></>
           )
-        }
-        return (
-          <div key={ship[key]}>
-            {_.startCase(key)}: {ship[key]}
-          </div>
-        )
-      })}
-    </BoxOne>
+        })}
+        <StyledLink to='/'>
+          <button onClick={() => {}}>Return</button>
+        </StyledLink>
+      </BoxOne>
+    </>
   )
 }
 
@@ -75,13 +79,14 @@ const BoxOne = styled.div`
   margin: 8px auto;
   max-width: 520px;
   position: relative;
-
+  background-color: #eee;
   & ul {
     margin: 0;
   }
-  & > button {
-    position: absolute;
-    right: 40px;
-    top: 16px;
-  }
+`
+
+const StyledLink = styled(Link)`
+  position: absolute;
+  right: 40px;
+  top: 16px;
 `

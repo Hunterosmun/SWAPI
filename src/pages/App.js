@@ -11,7 +11,7 @@ import fetchStarships from '../api/starships-only'
 // - [ ] 2 Filter list by price
 // - [ ] 3 Sort list by price
 // - [x] 4 Search list
-// - [ ] 5 See individual starship
+// - [x] 5 See individual starship
 // - [x] 6 See info on pilots attached to individual starships
 
 // load starships first, then, when they go into a specific thing, load that starships pilots
@@ -29,7 +29,7 @@ function App () {
 
   return (
     <SearchWrapper>
-      <h2>Star Wars Ship Search</h2>
+      <h2>Star Wars Ship Catalog</h2>
       <div className='options'>
         <input
           type='text'
@@ -47,8 +47,24 @@ function App () {
               />
               <span>Show Cost</span>
             </div>
-            <button>Price Ascending</button>
-            <button>Price Descending</button>
+            <button
+              onClick={() => {
+                foundShips = foundShips.filter(
+                  ship => ship.cost_in_credits !== -1
+                )
+              }}
+            >
+              Price Ascending
+            </button>
+            <button
+              onClick={() => {
+                foundShips = foundShips.filter(
+                  ship => ship.cost_in_credits !== -1
+                )
+              }}
+            >
+              Price Descending
+            </button>
             <div>
               Price Range:
               <div>
@@ -73,8 +89,11 @@ function ShipSearch ({ seePrice, ships }) {
     <BoxOne>
       {ships.map(ship => {
         return (
-          <StyledLink to={`/ship/${ship.url}`}>
-            <SearchItem key={ship.name}>
+          <StyledLink
+            key={ship.name}
+            to={{ pathname: '/ship', search: ship.url }}
+          >
+            <SearchItem>
               <div>{ship.name}</div>
               {seePrice && <div>Credits: {ship.cost_in_credits}</div>}
             </SearchItem>
@@ -90,6 +109,18 @@ function compare (a, b) {
     a.toLowerCase().includes(b.toLowerCase()) ||
     b.toLowerCase().includes(a.toLowerCase())
   )
+}
+
+function filterList (list, search, ascDesc, min, max) {
+  let newList = _.filter(list, ship => compare(search, ship.name))
+
+  if (ascDesc) {
+  }
+  if (min) {
+  }
+  if (max) {
+  }
+  return newList
 }
 
 const SearchWrapper = styled.div`
