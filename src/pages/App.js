@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import _ from 'lodash'
 
 import fetchStarships from '../api/starships-only'
+import { placeholder } from '@babel/types'
 // import ShipSearch from './modules/starship-search'
 
 // requirements:
@@ -21,8 +22,10 @@ function App () {
   const [active, setActive] = React.useState(false)
   const [showPrice, setShowPrice] = React.useState(false)
   const [ordered, setOrdered] = React.useState(false)
+  const [byPrice, setByPrice] = React.useState([])
   const [starships, setStarships] = React.useState([])
   const [foundShips, setFound] = React.useState([])
+  const [priceShips, setPrice] = React.useState([])
 
   React.useEffect(() => {
     fetchStarships().then(e => setStarships(e))
@@ -31,22 +34,43 @@ function App () {
   React.useEffect(() => {
     ;(function () {
       setFound(_.filter(starships, ship => compare(search, ship.name)))
+    })()
+  }, [search, starships])
 
+  React.useEffect(() => {
+    ;(function () {
+      setPrice(foundShips)
+      if (byPrice.max) {
+        setPrice(foundShips =>
+          foundShips.filter(ship => ship.cost_in_credits < byPrice.max)
+        )
+      }
+      if (byPrice.min) {
+        setPrice(foundShips =>
+          foundShips.filter(ship => ship.cost_in_credits > byPrice.min)
+        )
+      }
+    })()
+  }, [byPrice, foundShips])
+
+  React.useEffect(() => {
+    ;(function () {
       if (ordered) {
-        let newList = _.sortBy(foundShips, ['obj', 'cost_in_credits'])
-        newList = newList.sort((a, b) => {
-          if (a.cost_in_credits === b.cost_in_credits) return 0
-          if (a.cost_in_credits === -1) return 1
-          if (b.cost_in_credits === -1) return -1
-        })
-        setFound(newList)
+        setFound(foundShips => _.sortBy(foundShips, ['obj', 'cost_in_credits']))
+        setFound(foundShips =>
+          foundShips.sort((a, b) => {
+            if (a.cost_in_credits === b.cost_in_credits) return 0
+            if (a.cost_in_credits === -1) return 1
+            if (b.cost_in_credits === -1) return -1
+          })
+        )
       } else {
-        setFound(
+        setFound(foundShips =>
           _.orderBy(foundShips, ['obj', 'cost_in_credits'], ['asc', 'desc'])
         )
       }
     })()
-  }, [ordered, search, starships])
+  }, [ordered])
 
   if (starships.length === 0) {
     return <div>Loading :(</div>
@@ -90,17 +114,27 @@ function App () {
               Price Range:
               <div>
                 max:
-                <input type='number' />
+                <input
+                  type='number'
+                  onChange={e =>
+                    setByPrice({ ...byPrice, max: e.target.value })
+                  }
+                />
               </div>
               <div>
                 min:
-                <input type='number' />
+                <input
+                  type='number'
+                  onChange={e =>
+                    setByPrice({ ...byPrice, min: e.target.value })
+                  }
+                />
               </div>
             </div>
           </div>
         )}
       </div>
-      <ShipSearch seePrice={showPrice} ships={foundShips} />
+      <ShipSearch seePrice={showPrice} ships={priceShips} />
     </SearchWrapper>
   )
 }
@@ -116,7 +150,14 @@ function ShipSearch ({ seePrice, ships }) {
           >
             <SearchItem>
               <div>{ship.name}</div>
-              {seePrice && <div>Credits: {ship.cost_in_credits}</div>}
+              {seePrice && (
+                <div>
+                  Credits:{' '}
+                  {ship.cost_in_credits === -1
+                    ? 'Unknown'
+                    : ship.cost_in_credits}
+                </div>
+              )}
             </SearchItem>
           </StyledLink>
         )
