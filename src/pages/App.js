@@ -9,7 +9,7 @@ import fetchStarships from '../api/starships-only'
 // requirements:
 // - [x] 1 See a list of all starships
 // - [ ] 2 Filter list by price
-// - [ ] 3 Sort list by price
+// - [x] 3 Sort list by price
 // - [x] 4 Search list
 // - [x] 5 See individual starship
 // - [x] 6 See info on pilots attached to individual starships
@@ -20,12 +20,37 @@ function App () {
   const [search, setSearch] = React.useState('')
   const [active, setActive] = React.useState(false)
   const [showPrice, setShowPrice] = React.useState(false)
+  const [ordered, setOrdered] = React.useState(false)
   const [starships, setStarships] = React.useState([])
-  let foundShips = _.filter(starships, ship => compare(search, ship.name))
+  const [foundShips, setFound] = React.useState([])
 
   React.useEffect(() => {
     fetchStarships().then(e => setStarships(e))
   }, [])
+
+  React.useEffect(() => {
+    ;(function () {
+      setFound(_.filter(starships, ship => compare(search, ship.name)))
+
+      if (ordered) {
+        let newList = _.sortBy(foundShips, ['obj', 'cost_in_credits'])
+        newList = newList.sort((a, b) => {
+          if (a.cost_in_credits === b.cost_in_credits) return 0
+          if (a.cost_in_credits === -1) return 1
+          if (b.cost_in_credits === -1) return -1
+        })
+        setFound(newList)
+      } else {
+        setFound(
+          _.orderBy(foundShips, ['obj', 'cost_in_credits'], ['asc', 'desc'])
+        )
+      }
+    })()
+  }, [ordered, search, starships])
+
+  if (starships.length === 0) {
+    return <div>Loading :(</div>
+  }
 
   return (
     <SearchWrapper>
@@ -49,18 +74,14 @@ function App () {
             </div>
             <button
               onClick={() => {
-                foundShips = foundShips.filter(
-                  ship => ship.cost_in_credits !== -1
-                )
+                setOrdered(false)
               }}
             >
               Price Ascending
             </button>
             <button
               onClick={() => {
-                foundShips = foundShips.filter(
-                  ship => ship.cost_in_credits !== -1
-                )
+                setOrdered(true)
               }}
             >
               Price Descending
@@ -109,18 +130,6 @@ function compare (a, b) {
     a.toLowerCase().includes(b.toLowerCase()) ||
     b.toLowerCase().includes(a.toLowerCase())
   )
-}
-
-function filterList (list, search, ascDesc, min, max) {
-  let newList = _.filter(list, ship => compare(search, ship.name))
-
-  if (ascDesc) {
-  }
-  if (min) {
-  }
-  if (max) {
-  }
-  return newList
 }
 
 const SearchWrapper = styled.div`
