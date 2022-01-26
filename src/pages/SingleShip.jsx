@@ -23,29 +23,29 @@ function ShipBox ({ ship }) {
   return (
     <>
       <BoxOne>
-        {Object.keys(ship).map(key => {
-          if (key === 'created' || key === 'edited' || key === 'url')
-            return <></>
-          if (key === 'pilots' || key === 'films') {
-            return ship[key].length > 0 ? (
+        {Object.keys(ship)
+          .filter(key => key !== 'created' && key !== 'edited' && key !== 'url')
+          .map(key => {
+            if ((key === 'pilots' || key === 'films') && ship[key].length > 0) {
+              return (
+                <div key={key}>
+                  {_.startCase(key)}:
+                  <ul>
+                    {ship[key].map(indiv => (
+                      <li key={indiv.title || indiv.name}>
+                        {indiv.title || <PilotBox pilot={indiv} />}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+            return (
               <div key={key}>
-                {_.startCase(key)}:
-                <ul>
-                  {ship[key].map((indiv, i) => (
-                    <li key={i}>{indiv.title || <PilotBox pilot={indiv} />}</li>
-                  ))}
-                </ul>
+                {_.startCase(key)}: {ship[key]}
               </div>
-            ) : (
-              <></>
             )
-          }
-          return (
-            <div key={ship[key]}>
-              {_.startCase(key)}: {ship[key]}
-            </div>
-          )
-        })}
+          })}
         <StyledLink to='/'>
           <button onClick={() => {}}>Return</button>
         </StyledLink>
@@ -61,13 +61,25 @@ function PilotBox ({ pilot }) {
   ) : (
     <div>
       <button onClick={() => setActive(!active)}>Off</button>
-      {Object.keys(pilot).map(cha => {
-        return (
-          <div>
-            {_.startCase(cha)}: {pilot[cha]}
-          </div>
+      {Object.keys(pilot)
+        .filter(
+          key =>
+            key !== 'homeworld' &&
+            key !== 'films' &&
+            key !== 'species' &&
+            key !== 'vehicles' &&
+            key !== 'starships' &&
+            key !== 'created' &&
+            key !== 'edited' &&
+            key !== 'url'
         )
-      })}
+        .map(cha => {
+          return (
+            <div key={cha}>
+              {_.startCase(cha)}: {pilot[cha]}
+            </div>
+          )
+        })}
     </div>
   )
 }

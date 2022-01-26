@@ -22,7 +22,7 @@ function App () {
   const [active, setActive] = React.useState(false)
   const [showPrice, setShowPrice] = React.useState(false)
   const [ordered, setOrdered] = React.useState(false)
-  const [byPrice, setByPrice] = React.useState([])
+  const [byPrice, setByPrice] = React.useState({})
   const [starships, setStarships] = React.useState([])
   const [foundShips, setFound] = React.useState([])
   const [priceShips, setPrice] = React.useState([])
@@ -114,17 +114,45 @@ function App () {
               Price Range:
               <div>
                 max:
+                <span>
+                  <button
+                    onClick={() =>
+                      setByPrice(byPrice => {
+                        let newByPrice = { ...byPrice }
+                        delete newByPrice.max
+                        return newByPrice
+                      })
+                    }
+                  >
+                    clear
+                  </button>
+                </span>
                 <input
                   type='number'
+                  value={byPrice.max || 1000000000000}
                   onChange={e =>
                     setByPrice({ ...byPrice, max: e.target.value })
                   }
                 />
               </div>
               <div>
-                min:
+                min:{' '}
+                <span>
+                  <button
+                    onClick={() =>
+                      setByPrice(byPrice => {
+                        let newByPrice = { ...byPrice }
+                        delete newByPrice.min
+                        return newByPrice
+                      })
+                    }
+                  >
+                    clear
+                  </button>
+                </span>
                 <input
                   type='number'
+                  value={byPrice.min || -1}
                   onChange={e =>
                     setByPrice({ ...byPrice, min: e.target.value })
                   }
