@@ -1,12 +1,27 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
+
 import './index.css'
-import App from './App'
 import reportWebVitals from './reportWebVitals'
+
+import App from './pages/App'
+import FullView from './pages/FullView'
+import SingleShip from './pages/SingleShip'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<App />} />
+        <Route path='ship' element={<SingleShip />}>
+          <Route path=':shipId' element={<SingleShip />} />
+        </Route>
+        <Route path='full' element={<FullView />} />
+        <Route path='*' element={<div>Nothin here :(</div>} />
+      </Routes>
+    </BrowserRouter>
+    <Outlet />
   </React.StrictMode>,
   document.getElementById('root')
 )

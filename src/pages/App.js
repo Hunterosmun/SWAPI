@@ -1,9 +1,9 @@
+import { Link } from 'react-router-dom'
 import React from 'react'
 import styled from 'styled-components'
 import _ from 'lodash'
 
-import './App.css'
-import fetchStarships from './api/starships-only'
+import fetchStarships from '../api/starships-only'
 // import ShipSearch from './modules/starship-search'
 
 // requirements:
@@ -19,6 +19,7 @@ import fetchStarships from './api/starships-only'
 function App () {
   const [search, setSearch] = React.useState('')
   const [active, setActive] = React.useState(false)
+  const [showPrice, setShowPrice] = React.useState(false)
   const [starships, setStarships] = React.useState([])
   let foundShips = _.filter(starships, ship => compare(search, ship.name))
 
@@ -39,6 +40,13 @@ function App () {
         <button onClick={() => setActive(!active)}>Filters</button>
         {active && (
           <div className='filterBox'>
+            <div>
+              <input
+                type='checkbox'
+                onChange={() => setShowPrice(!showPrice)}
+              />
+              <span>Show Cost</span>
+            </div>
             <button>Price Ascending</button>
             <button>Price Descending</button>
             <div>
@@ -46,7 +54,7 @@ function App () {
               <div>
                 max:
                 <input type='number' />
-              </div>{' '}
+              </div>
               <div>
                 min:
                 <input type='number' />
@@ -55,20 +63,22 @@ function App () {
           </div>
         )}
       </div>
-      <ShipSearch ships={foundShips} />
+      <ShipSearch seePrice={showPrice} ships={foundShips} />
     </SearchWrapper>
   )
 }
 
-function ShipSearch ({ ships }) {
+function ShipSearch ({ seePrice, ships }) {
   return (
     <BoxOne>
       {ships.map(ship => {
         return (
-          <SearchItem>
-            <div>{ship.name}</div>
-            <button onClick={() => console.log('hello')}>Select</button>
-          </SearchItem>
+          <StyledLink to={`/ship/${ship.url}`}>
+            <SearchItem key={ship.name}>
+              <div>{ship.name}</div>
+              {seePrice && <div>Credits: {ship.cost_in_credits}</div>}
+            </SearchItem>
+          </StyledLink>
         )
       })}
     </BoxOne>
@@ -95,7 +105,7 @@ const SearchWrapper = styled.div`
   & > div > input {
     margin: 0 0 8px 0;
     padding: 4px 8px;
-    width: 300px;
+    width: 200px;
   }
   & .options {
     display: flex;
@@ -129,7 +139,7 @@ const SearchWrapper = styled.div`
 const BoxOne = styled.div`
   padding: 0 8px;
   box-sizing: border-box;
-  min-width: 400px;
+  min-width: 300px;
   position: relative;
   border: 1px solid #ccc;
 
@@ -146,7 +156,15 @@ const SearchItem = styled.div`
   padding: 8px 4px;
   border-bottom: 1px solid #ccc;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  &:hover {
+    background-color: #ccc;
+  }
+`
+
+const StyledLink = styled(Link)`
+  color: black;
+  text-decoration: none;
 `
 
 export default App
