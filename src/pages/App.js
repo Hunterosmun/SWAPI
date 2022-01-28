@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import _ from 'lodash'
 
 import fetchStarships from '../api/starships-only'
-import { placeholder } from '@babel/types'
 // import ShipSearch from './modules/starship-search'
 
 // requirements:
@@ -22,55 +21,39 @@ function App () {
   const [active, setActive] = React.useState(false)
   const [showPrice, setShowPrice] = React.useState(false)
   const [ordered, setOrdered] = React.useState(false)
-  const [byPrice, setByPrice] = React.useState({})
+  const [byPrice, setByPrice] = React.useState({ min: 0, max: 0 })
   const [starships, setStarships] = React.useState([])
-  const [foundShips, setFound] = React.useState([])
-  const [priceShips, setPrice] = React.useState([])
 
   React.useEffect(() => {
     fetchStarships().then(e => setStarships(e))
   }, [])
 
-  React.useEffect(() => {
-    ;(function () {
-      setFound(_.filter(starships, ship => compare(search, ship.name)))
-    })()
-  }, [search, starships])
+  const sortList = () => {
+    let sortedList = []
+    sortedList = _.filter(starships, ship => compare(search, ship.name))
+    if (byPrice.max) {
+      sortedList = sortedList.filter(ship => ship.cost_in_credits < byPrice.max)
+    }
+    if (byPrice.min) {
+      sortedList = sortedList.filter(ship => ship.cost_in_credits > byPrice.min)
+    }
+    if (ordered) {
+      sortedList = _.sortBy(sortedList, ['obj', 'cost_in_credits'])
+    } else {
+      sortedList = _.orderBy(
+        sortedList,
+        ['obj', 'cost_in_credits'],
+        ['asc', 'desc']
+      )
+    }
+    sortedList = sortedList.sort((a, b) => {
+      if (a.cost_in_credits === -1) return 1
+      if (b.cost_in_credits === -1) return -1
+      return 0
+    })
 
-  React.useEffect(() => {
-    ;(function () {
-      setPrice(foundShips)
-      if (byPrice.max) {
-        setPrice(foundShips =>
-          foundShips.filter(ship => ship.cost_in_credits < byPrice.max)
-        )
-      }
-      if (byPrice.min) {
-        setPrice(foundShips =>
-          foundShips.filter(ship => ship.cost_in_credits > byPrice.min)
-        )
-      }
-    })()
-  }, [byPrice, foundShips])
-
-  React.useEffect(() => {
-    ;(function () {
-      if (ordered) {
-        setFound(foundShips => _.sortBy(foundShips, ['obj', 'cost_in_credits']))
-        setFound(foundShips =>
-          foundShips.sort((a, b) => {
-            if (a.cost_in_credits === b.cost_in_credits) return 0
-            if (a.cost_in_credits === -1) return 1
-            if (b.cost_in_credits === -1) return -1
-          })
-        )
-      } else {
-        setFound(foundShips =>
-          _.orderBy(foundShips, ['obj', 'cost_in_credits'], ['asc', 'desc'])
-        )
-      }
-    })()
-  }, [ordered])
+    return sortedList
+  }
 
   if (starships.length === 0) {
     return <div>Loading :(</div>
@@ -115,21 +98,13 @@ function App () {
               <div>
                 max:
                 <span>
-                  <button
-                    onClick={() =>
-                      setByPrice(byPrice => {
-                        let newByPrice = { ...byPrice }
-                        delete newByPrice.max
-                        return newByPrice
-                      })
-                    }
-                  >
+                  <button onClick={() => setByPrice({ ...byPrice, max: 0 })}>
                     clear
                   </button>
                 </span>
                 <input
                   type='number'
-                  value={byPrice.max || 1000000000000}
+                  value={byPrice.max}
                   onChange={e =>
                     setByPrice({ ...byPrice, max: e.target.value })
                   }
@@ -138,21 +113,13 @@ function App () {
               <div>
                 min:{' '}
                 <span>
-                  <button
-                    onClick={() =>
-                      setByPrice(byPrice => {
-                        let newByPrice = { ...byPrice }
-                        delete newByPrice.min
-                        return newByPrice
-                      })
-                    }
-                  >
+                  <button onClick={() => setByPrice({ ...byPrice, min: 0 })}>
                     clear
                   </button>
                 </span>
                 <input
                   type='number'
-                  value={byPrice.min || -1}
+                  value={byPrice.min}
                   onChange={e =>
                     setByPrice({ ...byPrice, min: e.target.value })
                   }
@@ -162,7 +129,7 @@ function App () {
           </div>
         )}
       </div>
-      <ShipSearch seePrice={showPrice} ships={priceShips} />
+      <ShipSearch seePrice={showPrice} ships={sortList()} />
     </SearchWrapper>
   )
 }
